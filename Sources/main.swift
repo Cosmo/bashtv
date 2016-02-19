@@ -1,6 +1,5 @@
 import Foundation
 import Rainbow
-import Gloss
 
 print("    .########.....###.....######..##.....##.########.##.....##    ".red.bold.blink)
 print("    .##.....##...##.##...##....##.##.....##....##....##.....##    ".red.bold.blink)
