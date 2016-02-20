@@ -12,20 +12,63 @@ print("                                        MMMMMMMMMM MMMMMMMMMMM    ")
 print("")
 
 struct Broadcast {
-  let beginsAt: NSDate
-  let endsAt: NSDate
+  let beginsAt: Int
+  let endsAt: Int
   let duration: Int
   let title: String
   let channel: String
 }
 
-let content: [Broadcast] = [
-  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Zoogeschichten von der Küste", channel: "BR"),
-  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Alles was Bayern bewegt", channel: "BR"),
-  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Glückskind", channel: "BR"),
-  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Abenteuer Nordsee - Zwischen Killerwalen und Kegelrobben", channel: "BR"),
-  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Glückskind", channel: "BR")
-]
+
+
+// let channelNameSearch: String? = "ARD"
+// let titleSearch: String? = "Fluch"
+let nowInSeconds  = Int(NSDate().timeIntervalSince1970)
+
+
+let cli = CommandLine()
+
+let channelNameSearch = StringOption(shortFlag: "c", longFlag: "channel", helpMessage: "Channel name match")
+let titleSearch = StringOption(shortFlag: "b", longFlag: "broadcast", helpMessage: "Broadcast title")
+let help = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
+let verbosity = CounterOption(shortFlag: "v", longFlag: "verbose", helpMessage: "Print verbose messages.")
+
+cli.addOptions(channelNameSearch, titleSearch, help, verbosity)
+
+do {
+  try cli.parse()
+} catch {
+  cli.printUsage(error)
+  exit(EX_USAGE)
+}
+
+
+
+let rawBroadcasts = NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
+var broadcasts = [Broadcast]()
+if let rawBroadcasts = rawBroadcasts as? [[String: AnyObject]] {
+  for rawBroadcast in rawBroadcasts {
+      if let
+        rawBroadcast  = rawBroadcast as? [String: AnyObject],
+        beginsAt      = rawBroadcast["start"] as? Int,
+        endsAt        = rawBroadcast["end"] as? Int,
+        duration      = rawBroadcast["duration"] as? Int,
+        title         = rawBroadcast["title"] as? String,
+        channel       = rawBroadcast["channel"] as? String
+      {
+        if
+          beginsAt <= nowInSeconds
+          &&
+          (channelNameSearch.value == nil || (channelNameSearch.value != nil && channel.containsString(channelNameSearch.value!)))
+          &&
+          (titleSearch.value == nil || (titleSearch.value != nil && title.containsString(titleSearch.value!)))
+        {
+          let broadcast = Broadcast(beginsAt: beginsAt, endsAt: endsAt, duration: duration, title: title, channel: channel)
+          broadcasts.append(broadcast)
+        }
+      }
+  }
+}
 
 if let
   linesString   = "tput li".call(),
@@ -34,7 +77,7 @@ if let
   columns       = columnsString.digitsOnly()
 {
   let timeWidth = 12
-  let channelNameWidth = 18
+  let channelNameWidth = 24
   let broadcastTitleWidth = columns - timeWidth - channelNameWidth
   
   let top = [
@@ -67,9 +110,10 @@ if let
   let dateForm = NSDateFormatter()
   dateForm.dateFormat = "dd.MM HH:mm"
   
-  for lineData in content {
+  for lineData in broadcasts {
       
-      let dateString = dateForm.stringFromDate(lineData.beginsAt)
+      var date = NSDate(timeIntervalSince1970: Double(lineData.beginsAt))
+      let dateString = dateForm.stringFromDate(date)
       
       let line = [
         "│ ",
@@ -90,9 +134,7 @@ if let
     "┴".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
     "┘"
   ].joinWithSeparator("")
+  print(bottom)
   
-
-  let resp = NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
-  print(resp)
 }
 
