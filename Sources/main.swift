@@ -11,18 +11,20 @@ print("    88Y8888' `88888P8 `88888P' dP    dP MMMM  MMMM M     .dMMM    ")
 print("                                        MMMMMMMMMM MMMMMMMMMMM    ")
 print("")
 
-struct EPGRow {
-  let date: NSDate
+struct Broadcast {
+  let beginsAt: NSDate
+  let endsAt: NSDate
+  let duration: Int
   let title: String
   let channel: String
 }
 
-let content: [EPGRow] = [
-  EPGRow(date: NSDate(), title: "Zoogeschichten von der Küste", channel: "BR"),
-  EPGRow(date: NSDate(), title: "Alles was Bayern bewegt", channel: "BR"),
-  EPGRow(date: NSDate(), title: "Glückskind", channel: "BR"),
-  EPGRow(date: NSDate(), title: "Abenteuer Nordsee - Zwischen Killerwalen und Kegelrobben", channel: "BR"),
-  EPGRow(date: NSDate(), title: "Glückskind", channel: "BR")
+let content: [Broadcast] = [
+  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Zoogeschichten von der Küste", channel: "BR"),
+  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Alles was Bayern bewegt", channel: "BR"),
+  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Glückskind", channel: "BR"),
+  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Abenteuer Nordsee - Zwischen Killerwalen und Kegelrobben", channel: "BR"),
+  Broadcast(beginsAt: NSDate(), endsAt: NSDate(), duration: 0, title: "Glückskind", channel: "BR")
 ]
 
 if let
@@ -67,7 +69,7 @@ if let
   
   for lineData in content {
       
-      let dateString = dateForm.stringFromDate(lineData.date)
+      let dateString = dateForm.stringFromDate(lineData.beginsAt)
       
       let line = [
         "│ ",
@@ -93,6 +95,4 @@ if let
   let resp = NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
   print(resp)
 }
-
-
 
