@@ -1,13 +1,15 @@
 import Foundation
 import Rainbow
 
-print("    .########.....###.....######..##.....##.########.##.....##    ".red.bold.blink)
-print("    .##.....##...##.##...##....##.##.....##....##....##.....##    ".red.bold.blink)
-print("    .##.....##..##...##..##.......##.....##....##....##.....##    ".red.bold.blink)
-print("    .########..##.....##..######..#########....##....##.....##    ".red.bold.blink)
-print("    .##.....##.#########.......##.##.....##....##.....##...##.    ".red.bold.blink)
-print("    .##.....##.##.....##.##....##.##.....##....##......##.##..    ".red.bold.blink)
-print("    .########..##.....##..######..##.....##....##.......###...    ".red.bold.blink)
+print("")
+print("    dP                         dP       M''''''''M M''MMMMM''M    ")
+print("    88                         88       Mmmm  mmmM M  MMMMM  M    ")
+print("    88d888b. .d8888b. .d8888b. 88d888b. MMMM  MMMM M  MMMMP  M    ")
+print("    88'  `88 88'  `88 Y8ooooo. 88'  `88 MMMM  MMMM M  MMMM' .M    ")
+print("    88.  .88 88.  .88       88 88    88 MMMM  MMMM M  MMP' .MM    ")
+print("    88Y8888' `88888P8 `88888P' dP    dP MMMM  MMMM M     .dMMM    ")
+print("                                        MMMMMMMMMM MMMMMMMMMMM    ")
+print("")
 
 struct EPGRow {
   let date: NSDate
@@ -42,9 +44,12 @@ if let
   print(top)
   
   let header = [
-    "│ Time".stringByPaddingToLength(timeWidth + 2, withString: " ", startingAtIndex: 0),
-    "│ Name".stringByPaddingToLength(broadcastTitleWidth - 4, withString: " ", startingAtIndex: 0),
-    "│ Channel".stringByPaddingToLength(channelNameWidth + 1, withString: " ", startingAtIndex: 0),
+    "│ ",
+    "Time".stringByPaddingToLength(timeWidth, withString: " ", startingAtIndex: 0).bold,
+    "│ ",
+    "Name".stringByPaddingToLength(broadcastTitleWidth - 6, withString: " ", startingAtIndex: 0).bold,
+    "│ ",
+    "Channel".stringByPaddingToLength(channelNameWidth - 1, withString: " ", startingAtIndex: 0).bold,
     "│"
   ].joinWithSeparator("")
   print(header)
