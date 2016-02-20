@@ -90,7 +90,8 @@ if let
   ].joinWithSeparator("")
   
 
-  NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
+  let resp = NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
+  print(resp)
 }
 
 
