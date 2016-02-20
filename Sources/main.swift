@@ -23,21 +23,66 @@ let content: [EPGRow] = [
   EPGRow(date: NSDate(), title: "Glückskind", channel: "BR")
 ]
 
-
 if let
   linesString   = "tput li".call(),
   columnsString = "tput co".call(),
   lines         = linesString.digitsOnly(),
   columns       = columnsString.digitsOnly()
 {
-  let timeWidth = 11
-  let channelNameWidth = 13
-  let broadcastTitleWidth = columns - timeWidth - 8 - channelNameWidth
+  let timeWidth = 12
+  let channelNameWidth = 18
+  let broadcastTitleWidth = columns - timeWidth - channelNameWidth
   
-  for row in content {
-      let date = String(row.date.timeIntervalSince1970).stringByPaddingToLength(timeWidth, withString: " ", startingAtIndex: 0)
-      let title = row.title.stringByPaddingToLength(broadcastTitleWidth, withString: " ", startingAtIndex: 0)
-      let channel = row.channel.stringByPaddingToLength(channelNameWidth, withString: " ", startingAtIndex: 0)
-      print("| \(date)| \(title)| \(channel) |")
+  let top = [
+    "┌".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
+    "┬".stringByPaddingToLength(broadcastTitleWidth - 4, withString: "─", startingAtIndex: 0),
+    "┬".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
+    "┐"
+  ].joinWithSeparator("")
+  print(top)
+  
+  let header = [
+    "│ Time".stringByPaddingToLength(timeWidth + 2, withString: " ", startingAtIndex: 0),
+    "│ Name".stringByPaddingToLength(broadcastTitleWidth - 4, withString: " ", startingAtIndex: 0),
+    "│ Channel".stringByPaddingToLength(channelNameWidth + 1, withString: " ", startingAtIndex: 0),
+    "│"
+  ].joinWithSeparator("")
+  print(header)
+  
+  let separator = [
+    "├".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
+    "┼".stringByPaddingToLength(broadcastTitleWidth - 4, withString: "─", startingAtIndex: 0),
+    "┼".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
+    "┤"
+  ].joinWithSeparator("")
+  print(separator)
+  
+  let dateForm = NSDateFormatter()
+  dateForm.dateFormat = "dd.MM HH:mm"
+  
+  for lineData in content {
+      
+      let dateString = dateForm.stringFromDate(lineData.date)
+      
+      let line = [
+        "│ ",
+        String(dateString).stringByPaddingToLength(timeWidth, withString: " ", startingAtIndex: 0),
+        "│ ",
+        lineData.title.stringByPaddingToLength(broadcastTitleWidth - 6, withString: " ", startingAtIndex: 0),
+        "│ ",
+        lineData.channel.stringByPaddingToLength(channelNameWidth - 1, withString: " ", startingAtIndex: 0),
+        "│"
+      ].joinWithSeparator("")
+      
+      print(line)
   }
+  
+  let bottom = [
+    "└".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
+    "┴".stringByPaddingToLength(broadcastTitleWidth - 4, withString: "─", startingAtIndex: 0),
+    "┴".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
+    "┘"
+  ].joinWithSeparator("")
+  
+  print(bottom)
 }
