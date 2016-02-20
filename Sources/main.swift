@@ -42,8 +42,6 @@ do {
   exit(EX_USAGE)
 }
 
-
-
 let rawBroadcasts = NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
 var broadcasts = [Broadcast]()
 if let rawBroadcasts = rawBroadcasts as? [[String: AnyObject]] {
@@ -138,3 +136,4 @@ if let
   
 }
 
+Streamer.startStreaming("http://livestreams.br.de/i/bfssued_germany@119890/master.m3u8")
