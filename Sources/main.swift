@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 import Rainbow
 
 print("")
@@ -12,11 +13,13 @@ print("                                        MMMMMMMMMM MMMMMMMMMMM    ")
 print("")
 
 struct Broadcast {
+  let id: Int
   let beginsAt: Int
   let endsAt: Int
   let duration: Int
   let title: String
   let channel: String
+  let videoURL: String?
 }
 
 
@@ -32,8 +35,9 @@ let channelNameSearch = StringOption(shortFlag: "c", longFlag: "channel", helpMe
 let titleSearch = StringOption(shortFlag: "b", longFlag: "broadcast", helpMessage: "Broadcast title")
 let help = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
 let verbosity = CounterOption(shortFlag: "v", longFlag: "verbose", helpMessage: "Print verbose messages.")
+let stream = IntOption(shortFlag: "s", longFlag: "stream", helpMessage: "Stream Show by ID.")
 
-cli.addOptions(channelNameSearch, titleSearch, help, verbosity)
+cli.addOptions(channelNameSearch, titleSearch, stream, help, verbosity)
 
 do {
   try cli.parse()
@@ -46,8 +50,10 @@ let rawBroadcasts = NSURLSession.requestSynchronousJSONWithURLString("https://ra
 var broadcasts = [Broadcast]()
 if let rawBroadcasts = rawBroadcasts as? [[String: AnyObject]] {
   for rawBroadcast in rawBroadcasts {
+      let rawBroadcast  = rawBroadcast as [String: AnyObject]
+
       if let
-        rawBroadcast  = rawBroadcast as? [String: AnyObject],
+        id            = rawBroadcast["id"] as? Int,
         beginsAt      = rawBroadcast["start"] as? Int,
         endsAt        = rawBroadcast["end"] as? Int,
         duration      = rawBroadcast["duration"] as? Int,
@@ -61,25 +67,38 @@ if let rawBroadcasts = rawBroadcasts as? [[String: AnyObject]] {
           &&
           (titleSearch.value == nil || (titleSearch.value != nil && title.containsString(titleSearch.value!)))
         {
-          let broadcast = Broadcast(beginsAt: beginsAt, endsAt: endsAt, duration: duration, title: title, channel: channel)
+          let broadcast = Broadcast(id: id, beginsAt: beginsAt, endsAt: endsAt, duration: duration, title: title, channel: channel, videoURL: rawBroadcast["videoUrl"] as? String)
           broadcasts.append(broadcast)
         }
       }
   }
 }
 
+if let streamId = stream.value {
+    for broadcast in broadcasts where broadcast.id == streamId {
+
+      if let url = broadcast.videoURL {
+        Streamer.startStreaming(url)
+      } else {
+        print("Stream not available")
+      }
+    }
+    exit(0)
+}
 if let
   linesString   = "tput li".call(),
   columnsString = "tput co".call(),
   lines         = linesString.digitsOnly(),
   columns       = columnsString.digitsOnly()
 {
+  let indexWidth = 8
   let timeWidth = 12
   let channelNameWidth = 24
-  let broadcastTitleWidth = columns - timeWidth - channelNameWidth
+  let broadcastTitleWidth = columns - timeWidth - channelNameWidth - indexWidth
   
   let top = [
-    "┌".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
+    "┌".stringByPaddingToLength(indexWidth, withString: "─", startingAtIndex: 0),
+    "┬".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
     "┬".stringByPaddingToLength(broadcastTitleWidth - 4, withString: "─", startingAtIndex: 0),
     "┬".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
     "┐"
@@ -88,7 +107,9 @@ if let
   
   let header = [
     "│ ",
-    "Time".stringByPaddingToLength(timeWidth, withString: " ", startingAtIndex: 0).bold,
+    "ID".stringByPaddingToLength(indexWidth - 2, withString: " ", startingAtIndex: 0).bold,
+    "│ ",
+    "Time".stringByPaddingToLength(timeWidth , withString: " ", startingAtIndex: 0).bold,
     "│ ",
     "Name".stringByPaddingToLength(broadcastTitleWidth - 6, withString: " ", startingAtIndex: 0).bold,
     "│ ",
@@ -98,7 +119,8 @@ if let
   print(header)
   
   let separator = [
-    "├".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
+    "├".stringByPaddingToLength(indexWidth, withString: "─", startingAtIndex: 0),
+    "┼".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
     "┼".stringByPaddingToLength(broadcastTitleWidth - 4, withString: "─", startingAtIndex: 0),
     "┼".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
     "┤"
@@ -115,6 +137,8 @@ if let
       
       let line = [
         "│ ",
+        (lineData.videoURL != nil ? String( lineData.id) : "--").stringByPaddingToLength(indexWidth - 2, withString: " ", startingAtIndex: 0),
+        "│ ",
         String(dateString).stringByPaddingToLength(timeWidth, withString: " ", startingAtIndex: 0),
         "│ ",
         lineData.title.stringByPaddingToLength(broadcastTitleWidth - 6, withString: " ", startingAtIndex: 0),
@@ -127,7 +151,8 @@ if let
   }
   
   let bottom = [
-    "└".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
+    "└".stringByPaddingToLength(indexWidth, withString: "─", startingAtIndex: 0),
+    "┴".stringByPaddingToLength(timeWidth + 2, withString: "─", startingAtIndex: 0),
     "┴".stringByPaddingToLength(broadcastTitleWidth - 4, withString: "─", startingAtIndex: 0),
     "┴".stringByPaddingToLength(channelNameWidth + 1, withString: "─", startingAtIndex: 0),
     "┘"
@@ -136,4 +161,3 @@ if let
   
 }
 
-Streamer.startStreaming("http://livestreams.br.de/i/bfssued_germany@119890/master.m3u8")
