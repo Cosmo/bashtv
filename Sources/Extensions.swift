@@ -2,9 +2,14 @@ import Foundation
 import Environment
 
 extension String {
-  func digitsOnly() -> String? {
+  func digitsOnly() -> Int? {
     let digitsSet: NSCharacterSet = NSCharacterSet.decimalDigitCharacterSet().invertedSet
-    return (self as NSString).stringByTrimmingCharactersInSet(digitsSet)
+    if let
+        digits = Int((self as NSString).stringByTrimmingCharactersInSet(digitsSet))
+    {
+        return digits
+    }
+    return nil
   }
   
   func call() -> String? {
