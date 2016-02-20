@@ -89,5 +89,9 @@ if let
     "┘"
   ].joinWithSeparator("")
   
-  print(bottom)
+
+  NSURLSession.requestSynchronousJSONWithURLString("https://raw.githubusercontent.com/Cosmo/bashtv-service/master/BashTv.CommandLine/bin/Debug/br.json")
 }
+
+
+
