@@ -6,7 +6,7 @@
 - [mplayer](https://www.mplayerhq.hu/)
 - [Swift](https://swift.org/download/#latest-development-snapshots)
 
-**Note that the latest mplayer does not link to libcaca (at least on Mac OS)**
+**Note that the latest mplayer does not link to libcaca by default (at least on Mac OS)**
 
 ### On Mac
 ```
