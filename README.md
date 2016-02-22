@@ -1,5 +1,5 @@
 # bashtv
-*Created at #PulsHackDays 2015*
+*Created at [#PulsHackDays](http://www.pulshackdays.de/) 2015*
 
 ## Dependencies
 - [libcaca](http://caca.zoy.org/)
@@ -19,7 +19,7 @@
 Simply run `swift build` in the root directory of this project
 
 ## Run
-`./.build/debug/bashtv`
+`.build/debug/bashtv`
 
 ### Options
 - `-c` `--channel` : Filter Channel name
