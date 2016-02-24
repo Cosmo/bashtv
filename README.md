@@ -12,7 +12,7 @@ dP                         dP       M''''''''M M''MMMMM''M
 ## Dependencies
 - [libcaca](http://caca.zoy.org/)
 - [mplayer](https://www.mplayerhq.hu/)
-- [Swift](https://swift.org/download/#latest-development-snapshots)
+- [Swift 3.0+](https://swift.org/download/#latest-development-snapshots)
 
 **Note that the latest mplayer does not link to libcaca by default (at least on Mac OS)**
 
